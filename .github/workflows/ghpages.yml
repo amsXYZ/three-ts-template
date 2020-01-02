@@ -1,6 +1,9 @@
-name: Node CI
+name: Github Pages Deployment
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -13,10 +16,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: yarn install, build, and test
+      - name: yarn install and build
         run: |
           yarn install
           yarn build
-          yarn test
         env:
           CI: true
+
+      - name: Deploy
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v1
+        with:
+          target_branch: gh-pages
+          build_dir: dist
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
